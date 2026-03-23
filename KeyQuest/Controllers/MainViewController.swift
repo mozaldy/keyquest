@@ -19,6 +19,7 @@ class MainViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Free Play"
         view.backgroundColor = .systemBackground
 
         // 1. Create dependencies in correct order

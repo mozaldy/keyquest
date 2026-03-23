@@ -4,7 +4,6 @@ import AVFoundation
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    private var mainViewController: MainViewController?
 
     func scene(
         _ scene: UIScene,
@@ -16,25 +15,29 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // Configure AVAudioSession BEFORE any audio engine or view controller
         configureAudioSession()
 
-        // Create window and root VC
+        // Create window with navigation controller at root
         let window = UIWindow(windowScene: windowScene)
-        let mainVC = MainViewController()
-        self.mainViewController = mainVC
-        window.rootViewController = mainVC
+        let homeVC = HomeViewController()
+        let navController = UINavigationController(rootViewController: homeVC)
+        window.rootViewController = navController
         window.makeKeyAndVisible()
         self.window = window
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Save notes to UserDefaults
-        mainViewController?.saveState()
-        // Stop audio engine
-        mainViewController?.getAudioEngine().stop()
+        // Find MainViewController if it's active and save state
+        if let nav = window?.rootViewController as? UINavigationController,
+           let mainVC = nav.viewControllers.compactMap({ $0 as? MainViewController }).first {
+            mainVC.saveState()
+            mainVC.getAudioEngine().stop()
+        }
     }
 
     func sceneWillEnterForeground(_ scene: UIScene) {
-        // Restart audio engine
-        mainViewController?.getAudioEngine().start()
+        if let nav = window?.rootViewController as? UINavigationController,
+           let mainVC = nav.viewControllers.compactMap({ $0 as? MainViewController }).first {
+            mainVC.getAudioEngine().start()
+        }
     }
 
     // MARK: - Audio Session
